@@ -1,5 +1,3 @@
-//ifconfig | grep iset
-
 /**
  * Module dependencies.
  */
