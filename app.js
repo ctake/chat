@@ -63,22 +63,8 @@ console.log("Express server listening on port " + app.get('port'));
 
 var socket = require('socket.io').listen(server);
 socket.on('connection', function(client) {
-
-    client.on('delete', function(){
-	database.query(
-	    'TRUNCATE TABLE messages;',
-	    [],
-	    function(err, del) {
-		if(!err){
-		    // 送信元へメッセージ送信
-		    client.emit('delete', del);
-		    // 送信元以外の全てのクライアントへメッセージ送信
-		    client.broadcast.emit('delete', del);
-		}
-	    }
-	);
-    });
-
+    
+    //投稿したらメッセージを表示する処理
     client.on('message', function(event){
 	// クライアントからのメッセージをコンソールに出力
 	console.log(event.message);
@@ -102,12 +88,30 @@ socket.on('connection', function(client) {
 	
     });
 
+    //deleteの処理
+    client.on('delete', function(){
+	database.query(
+	    //tableを削除
+	    'TRUNCATE TABLE messages;',
+	    [],
+	    function(err, del) {
+		if(!err){
+		    // 送信元へdeleteを指示
+		    client.emit('delete', del);
+		    // 送信元以外の全てのクライアントへdeleteを指示
+		    client.broadcast.emit('delete', del);
+		}
+	    }
+	);
+    });
+
+    //初回読み込み時にデータベースのメッセージを読み込み
     database.query(
 	'select * from messages;',
 	[],
 	function(err, rows) {
 	    if(!err){
-	     //送信元へメッセージ送信
+	     //メッセージ送信
 		client.emit('rows', rows);
 	    }
 	}

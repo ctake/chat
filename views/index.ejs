@@ -10,16 +10,17 @@
    $(function(){
    var socket = new io.connect("/");
    
+   //submitボタンクリックで入力メッセージをサーバに送る   
    $("#submitButton").click(function(event){
-     // 入力メッセージをサーバへ
-     socket.emit("message", {message: $("#msg").val()});
+       socket.emit("message", {message: $("#msg").val()});
    });
 
+   //deleteボタンクリックで削除命令をサーバに送る
    $("#deleteButton").click(function(event){
-    
-   socket.emit("delete", {});
+     socket.emit("delete", {});
    });
    
+   //アクセス時にサーバからデータベースのテキストを読み込んで表示
    socket.on("rows", function(rows){
      for(var i=0;i<rows.length;i++){
 	// 受信メッセージをレンダリング
@@ -27,17 +28,16 @@
      }
    });
 
+   //deleteを受け取ったらul内を削除
    socket.on("delete", function(){
 	$("#messageArea ul").empty();
-   });  
-		   
+   });
+
+   //messageを受け取ったらulに追加
    socket.on("message", function(message){
-// 受信メッセージをレンダリング
-console.log(message);
- $("<li>").text(message).prependTo($("#messageArea ul"));
+   console.log(message);
+        $("<li>").text(message).prependTo($("#messageArea ul"));
  });
-
-
 
  });
  </script>
