@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><%= title %></title>
+ <link rel='stylesheet' href='/stylesheets/style.css' />
+
+ <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+ <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+ <script>
+   $(function(){
+   var socket = new io.connect("/");
+   
+   $("#submitButton").click(function(event){
+     // 入力メッセージをサーバへ
+     socket.emit("message", {message: $("#msg").val()});
+   });
+
+   $("#deleteButton").click(function(event){
+    
+   socket.emit("delete", {});
+   });
+   
+   socket.on("rows", function(rows){
+     for(var i=0;i<rows.length;i++){
+	// 受信メッセージをレンダリング
+	$("<li>").text(rows[i].text).prependTo($("#messageArea ul"));
+     }
+   });
+
+   socket.on("delete", function(){
+	$("#messageArea ul").empty();
+   });  
+		   
+   socket.on("message", function(message){
+// 受信メッセージをレンダリング
+console.log(message);
+ $("<li>").text(message).prependTo($("#messageArea ul"));
+ });
+
+
+
+ });
+ </script>
+ </head>
+ <body>
+ <div id="transportName">チャット</div>
+ <input id="msg">
+ <input id="submitButton" type="button" value="submit!">
+ <input id="deleteButton" type="button" value="delete!">
+ <div id="messageArea">
+ <ul></ul>
+ </div>
+ </body>
+</html>

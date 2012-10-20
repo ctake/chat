@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><%= title %></title>
+ <link rel='stylesheet' href='/stylesheets/style.css' />
+
+ <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+ <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+ <script>
+ $(function(){
+ var socket = new io.connect("/");
+
+ socket.on("connect", function(){
+ $("#transportName").text("connect via " + socket.socket.transport.name);// 接続時に接続方式表示
+ });
+
+ socket.on("message", function(message){
+ $("<li>").text(message).prependTo($("#messageArea ul"));// 受信メッセージをレンダリング
+ });
+
+ $("#submitButton").click(function(event){
+ socket.emit("message", {message: $("#msg").val()});// 入力メッセージをサーバへ
+ });
+ });
+ </script>
+ </head>
+ <body>
+ <div id="transportName"></div>
+ <input id="msg">
+ <input id="submitButton" type="button" value="submit!">
+ <div id="messageArea">
+ <ul></ul>
+ </div>
+ </body>
+</html>
